@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 
@@ -32,6 +33,14 @@ public class MainActivity extends BridgeActivity {
             });
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        // APK 移植：注册自建文件管理器插件（Capacitor 8 需显式注册，否则
+        // JS 端 registerPlugin("FilePicker") 拿到 noop，权限检查永远失败）。
+        registerPlugin(FilePickerPlugin.class);
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         requestAllFilesAccess();
@@ -39,19 +48,23 @@ public class MainActivity extends BridgeActivity {
 
     private void requestAllFilesAccess() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11+：MANAGE_EXTERNAL_STORAGE 只能通过系统设置页授予。
             if (!Environment.isExternalStorageManager()) {
                 try {
                     Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                     intent.setData(Uri.parse("package:" + getPackageName()));
                     manageStorageLauncher.launch(intent);
                 } catch (Exception e) {
+                    // 个别厂商 ROM 不带该 intent，退回通用管理页。
                     try {
                         manageStorageLauncher.launch(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
                     } catch (Exception ignored) {
+                        // 连通用页都没有就静默跳过，模型仍可通过系统文件选择器载入。
                     }
                 }
             }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Android 6.0–10：传统存储读取权限。
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{
@@ -60,5 +73,6 @@ public class MainActivity extends BridgeActivity {
                 }, 1001);
             }
         }
+        // Android 6.0 以下无需运行时权限。
     }
 }
