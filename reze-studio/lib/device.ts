@@ -1,5 +1,9 @@
 "use client"
 
+// Is this page running somewhere other than the site it was built for: a
+// repackaged WebView, an unknown host? Asked once on mount; the answer does not
+// change while the page lives.
+
 import { useSyncExternalStore } from "react"
 
 const P =
@@ -7,6 +11,9 @@ const P =
 
 function noticeDue(): boolean {
   try {
+    // APK 移植：Capacitor 原生容器（window.Capacitor）是本项目合法的开源
+    // Android 发行版，不是第三方篡改封装——直接不弹"非官方"警告。
+    // 网页版（无 Capacitor）与 Electron 版（上游本就 return false）行为不变。
     if (typeof window !== "undefined" && (window as { Capacitor?: unknown }).Capacitor) return false
     const p = JSON.parse(atob(P)) as { h: string[]; s: string; e: string; w: string; b: string; a: string }
     const u = navigator.userAgent
@@ -23,6 +30,7 @@ function noticeDue(): boolean {
 
 const never = () => () => {}
 
+/** Server render answers false: the notice is a client decision. */
 export function useNotice(): boolean {
   return useSyncExternalStore(never, noticeDue, () => false)
 }
