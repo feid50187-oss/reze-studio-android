@@ -1,0 +1,11 @@
+node_modules/
+.next/
+out/
+build/
+.gradle/
+*.tsbuildinfo
+android/local.properties
+android/app/build/
+android/.gradle/
+*.apk
+.DS_Store

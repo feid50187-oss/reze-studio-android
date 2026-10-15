@@ -1,0 +1,8 @@
+GPL-3.0-or-later
+
+Reze Studio — Android（本项目）
+
+本仓库包含的 reze-studio 前端源自 https://github.com/AmyangXYZ/reze-studio（GPLv3），
+reze-engine 为 npm 依赖（GPLv3）。完整许可文本见 reze-studio/LICENSE（随源码包分发）。
+
+SPDX-License-Identifier: GPL-3.0-or-later

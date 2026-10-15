@@ -1,0 +1,15 @@
+{
+  "name": "reze-studio-android",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "build": "cd reze-studio && npm run build",
+    "sync": "npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5"
+  }
+}
