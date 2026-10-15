@@ -2,12 +2,22 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-* { outline: none; }
+* {
+  outline: none;
+}
 
-[data-radix-scroll-area-viewport] > div { display: block !important; }
+/* Radix ScrollArea ships `display: table` on the inner content wrapper
+ * (radix-ui/react-scroll-area index.mjs:130). On iOS Safari, `display: table`
+ * inside an `overflow: scroll` ancestor swallows touch-pan gestures — desktop
+ * wheel still works, but drag-to-scroll on iPad does not. Forcing the wrapper
+ * back to block display restores native touch scrolling. */
+[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+}
 
 @custom-variant dark (&:is(.dark *));
 
+/* Heavier Figma-style drop shadow for floating panels / dialogs / popovers. */
 @utility shadow-float {
   box-shadow:
     0 20px 50px -12px rgb(0 0 0 / 0.7),
@@ -129,18 +139,18 @@
 }
 
 @layer base {
-  * { @apply border-border outline-ring/50; }
-  body { @apply bg-background text-foreground; }
-}
-
-@theme inline {
-  --color-ground: var(--ground);
-  --color-surface: var(--background);
-  --color-surface-raised: var(--popover);
-  --color-scrim: oklch(0.12 0.008 260 / 0.55);
-  --color-line: oklch(1 0 0 / 0.1);
-  --color-line-strong: oklch(1 0 0 / 0.16);
-  --radius-surface: 10px;
-  --radius-interior: 6px;
-  --radius-chip: 4px;
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* APK 移植：Android WebView 默认背景为白，横屏/回弹时会露出白边。
+     强制 html/body 与 app 主地面色一致，并禁止 overscroll 回弹露底。 */
+  html,
+  body {
+    background: oklch(0.105 0 0);
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
 }
